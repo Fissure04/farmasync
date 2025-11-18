@@ -49,6 +49,7 @@ public class VentaService {
         // Verificar stock y obtener precios para cada producto
         for (DetalleVentaDTO detalle : ventaDTO.getDetallesVenta()) {
             String urlProducto = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProducto();
+            @SuppressWarnings("unchecked") //para evitar advertencias de conversión en la siguiente linea
             Map<String, Object> producto = restTemplate.getForObject(urlProducto, Map.class);
             if (producto == null) {
                 throw new RuntimeException("Producto no encontrado en inventario con ID: " + detalle.getIdProducto());
