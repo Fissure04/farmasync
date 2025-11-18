@@ -68,11 +68,21 @@
             <artifactId>spring-dotenv</artifactId>
             <version>4.0.0</version>
         </dependency>
-		<dependency>
+		
+		<!-- ELIMINAR ESTA DEPENDENCIA -->
+		<!-- <dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
+		</dependency> -->
+
+		<!-- AGREGAR ESTA DEPENDENCIA -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>3.3.3</version>
 		</dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
