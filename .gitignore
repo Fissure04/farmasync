@@ -1,0 +1,7 @@
+# Global ignore patterns
+.DS_Store
+Thumbs.db
+*.log
+logs/
+.env
+.env.local
