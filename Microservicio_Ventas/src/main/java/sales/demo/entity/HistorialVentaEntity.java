@@ -35,9 +35,6 @@ public class HistorialVentaEntity {
     @Column(name = "tipo_evento", nullable = false)
     private String tipoEvento;
 
-    @Column(name = "id_usuario", nullable = false)
-    private Long idUsuario;
-
     @Column(name = "observacion")
     private String observacion;
 
@@ -78,14 +75,6 @@ public class HistorialVentaEntity {
 
     public void setTipoEvento(String tipoEvento) {
         this.tipoEvento = tipoEvento;
-    }
-
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
     }
 
     public String getObservacion() {

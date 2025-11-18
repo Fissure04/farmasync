@@ -19,21 +19,17 @@ public class HistorialVentaDTO {
     @Schema(description = "Tipo de evento", example = "CREACION", nullable = false)
     private String tipoEvento;
 
-    @Schema(description = "ID del usuario que realizó el evento", example = "5", nullable = false)
-    private Long idUsuario;
-
     @Schema(description = "Observación del evento", example = "Venta creada exitosamente", nullable = true)
     private String observacion;
 
     public HistorialVentaDTO() {
     }
 
-    public HistorialVentaDTO(Long id, Long idVenta, LocalDate fechaEvento, String tipoEvento, Long idUsuario, String observacion) {
+    public HistorialVentaDTO(Long id, Long idVenta, LocalDate fechaEvento, String tipoEvento, String observacion) {
         this.id = id;
         this.idVenta = idVenta;
         this.fechaEvento = fechaEvento;
         this.tipoEvento = tipoEvento;
-        this.idUsuario = idUsuario;
         this.observacion = observacion;
     }
 
@@ -67,14 +63,6 @@ public class HistorialVentaDTO {
 
     public void setTipoEvento(String tipoEvento) {
         this.tipoEvento = tipoEvento;
-    }
-
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
     }
 
     public String getObservacion() {

@@ -71,7 +71,7 @@ public class VentaMapper {
             return null;
 
         return new HistorialVentaDTO(entity.getId(), entity.getVenta().getId(), entity.getFechaEvento(),
-                entity.getTipoEvento(), entity.getIdUsuario(), entity.getObservacion());
+                entity.getTipoEvento(), entity.getObservacion());
     }
 
     public List<VentaDTO> toDTOList(List<VentaEntity> entities) {
