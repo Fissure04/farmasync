@@ -26,9 +26,6 @@ public class VentaController {
 
 	private final VentaService ventaService;
 
-	    // URL del mircroservicio de inventario
-    private static final String INVENTARIO_SERVICE_URL = "http://localhost:8016/farmasync/inventario";
-	
 	@Autowired
 	public VentaController(VentaService ventaService) {
 		this.ventaService = ventaService;

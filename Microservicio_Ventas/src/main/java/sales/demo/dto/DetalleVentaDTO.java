@@ -10,8 +10,8 @@ public class DetalleVentaDTO {
     @Schema(description = "ID del detalle de la venta", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @Schema(description = "ID del producto", example = "5", nullable = false)
-    private Long idProducto;
+    @Schema(description = "ID del producto", example = "691570141c1d601ffaf58612", nullable = false)
+    private String idProducto;
 
     @Schema(description = "Cantidad del producto", example = "10", nullable = false, minimum = "1")
     private Integer cantidad;
@@ -25,7 +25,7 @@ public class DetalleVentaDTO {
     public DetalleVentaDTO() {
     }
 
-    public DetalleVentaDTO(Long id, Long idProducto, Integer cantidad, BigDecimal precioUnitario, BigDecimal subtotal) {
+    public DetalleVentaDTO(Long id, String idProducto, Integer cantidad, BigDecimal precioUnitario, BigDecimal subtotal) {
         this.id = id;
         this.idProducto = idProducto;
         this.cantidad = cantidad;
@@ -41,11 +41,11 @@ public class DetalleVentaDTO {
         this.id = id;
     }
 
-    public Long getIdProducto() {
+    public String getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(Long idProducto) {
+    public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
     }
 

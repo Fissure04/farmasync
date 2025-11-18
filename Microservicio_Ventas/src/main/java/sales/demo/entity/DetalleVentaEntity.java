@@ -29,7 +29,7 @@ public class DetalleVentaEntity {
     private VentaEntity venta;
 
     @Column(name = "id_producto", nullable = false)
-    private Long idProducto;
+    private String idProducto;
 
     @Column(name = "cantidad", nullable = false)
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
@@ -57,11 +57,11 @@ public class DetalleVentaEntity {
         this.id = id;
     }
 
-    public Long getIdProducto() {
+    public String getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(Long idProducto) {
+    public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
     }
 
