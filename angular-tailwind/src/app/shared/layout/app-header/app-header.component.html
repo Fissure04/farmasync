@@ -1,0 +1,59 @@
+<div class="flex items-center justify-between px-4 py-4 md:px-6 md:py-6 bg-brand-600 dark:bg-brand-700 border-b border-brand-700 dark:border-brand-800 shadow-theme-sm">
+  <!-- Logo/Brand Section -->
+  <div class="flex items-center gap-4">
+    <h1 class="text-xl md:text-2xl font-bold text-white">FarmAsync</h1>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="flex items-center gap-3 md:gap-4">
+    <button 
+      class="inline-flex items-center gap-2 rounded-lg px-3 py-2 md:px-4 md:py-2.5 text-theme-sm font-medium text-white bg-brand-500 hover:bg-brand-700 transition-colors" 
+      routerLink="/dashboard">
+      Inicio
+    </button>
+    
+
+    <button 
+      class="inline-flex items-center gap-2 rounded-lg px-3 py-2 md:px-4 md:py-2.5 text-theme-sm font-medium text-white bg-brand-500 hover:bg-brand-700 transition-colors" 
+      routerLink="/agent">
+      Agente
+    </button>
+
+    <!-- Role-based Admin Button -->
+    <button 
+      *ngIf="authService.isAdmin()" 
+      class="inline-flex items-center gap-2 rounded-lg px-3 py-2 md:px-4 md:py-2.5 text-theme-sm font-medium text-white bg-brand-500 hover:bg-brand-700 transition-colors" 
+      routerLink="/admin">
+      Admin
+    </button>
+
+    <!-- User Switcher for Testing -->
+    <div class="relative">
+      <button 
+        (click)="showUserSwitcher = !showUserSwitcher" 
+        class="inline-flex items-center gap-2 rounded-lg px-3 py-2 md:px-4 md:py-2.5 text-theme-sm font-medium text-white bg-brand-500 hover:bg-brand-700 transition-colors">
+        Usuario
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+
+      <div *ngIf="showUserSwitcher" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-theme-lg z-50 border border-gray-200 dark:border-gray-700">
+        <div class="py-1">
+          <button (click)="switchToAdmin()" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-brand-600 rounded-full mr-3"></div>
+              <span>Admin User</span>
+            </div>
+          </button>
+          <button (click)="switchToClient()" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-brand-500 rounded-full mr-3"></div>
+              <span>Client User</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

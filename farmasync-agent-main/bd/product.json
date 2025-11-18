@@ -1,0 +1,82 @@
+[
+  {
+    "nombre": "Acetaminofén 500 mg",
+    "descripcion": "Analgésico y antipirético.",
+    "precio": 9500,
+    "stock": 120,
+    "provedor_id": "prov-001",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Paracetamol_500_mg_pills.jpg"
+  },
+  {
+    "nombre": "Ibuprofeno 400 mg",
+    "descripcion": "Antiinflamatorio no esteroideo.",
+    "precio": 12000,
+    "stock": 80,
+    "provedor_id": "prov-002",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Ibuprofen_400mg_pills.jpg"
+  },
+  {
+    "nombre": "Omeprazol 20 mg",
+    "descripcion": "Reduce la acidez gástrica.",
+    "precio": 15000,
+    "stock": 60,
+    "provedor_id": "prov-003",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Omeprazole_drug_capsules.jpg"
+  },
+  {
+    "nombre": "Loratadina 10 mg",
+    "descripcion": "Antihistamínico para alergias.",
+    "precio": 10000,
+    "stock": 100,
+    "provedor_id": "prov-004",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Loratadine_10mg_Tablets.jpg"
+  },
+  {
+    "nombre": "Suero Oral Electrolitos",
+    "descripcion": "Solución hidratante.",
+    "precio": 7500,
+    "stock": 200,
+    "provedor_id": "prov-005",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Oral_Rehydration_Salts_Packets.jpg"
+  },
+  {
+    "nombre": "Alcohol Antiséptico 70%",
+    "descripcion": "Desinfectante para piel y superficies.",
+    "precio": 5000,
+    "stock": 150,
+    "provedor_id": "prov-006",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Isopropyl_alcohol_bottle.jpg"
+  },
+  {
+    "nombre": "Gel Antibacterial",
+    "descripcion": "Limpieza de manos sin agua.",
+    "precio": 9000,
+    "stock": 75,
+    "provedor_id": "prov-007",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Hand_sanitizer_bottle.jpg"
+  },
+  {
+    "nombre": "Ungüento mentolado",
+    "descripcion": "Alivia congestión nasal.",
+    "precio": 19000,
+    "stock": 50,
+    "provedor_id": "prov-008",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Vaporub.jpg"
+  },
+  {
+    "nombre": "Multivitamínico",
+    "descripcion": "Suplemento alimenticio completo.",
+    "precio": 45000,
+    "stock": 40,
+    "provedor_id": "prov-009",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Multivitamin_pills.jpg"
+  },
+  {
+    "nombre": "Aspirina 100 mg",
+    "descripcion": "Analgésico y antiagregante.",
+    "precio": 22000,
+    "stock": 90,
+    "provedor_id": "prov-010",
+    "imagen_url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Aspirin_white_pills.jpg"
+  }
+]

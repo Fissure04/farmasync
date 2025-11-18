@@ -1,0 +1,197 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Gestión de Productos</h1>
+    <button (click)="openAddProductModal()" class="px-6 py-3 rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-700">
+      + Agregar Producto
+    </button>
+  </div>
+
+  <!-- Loading indicator -->
+  @if (loading) {
+  <div class="flex justify-center items-center py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+    <span class="ml-2 text-gray-600 dark:text-gray-400">Cargando productos...</span>
+  </div>
+  }
+
+  <!-- Estadísticas -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Total Productos</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ products.length }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-light-100 dark:bg-blue-light-900 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-light-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Productos Activos</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ getActiveProductsCount() }}</p>
+        </div>
+        <div class="w-12 h-12 bg-success-100 dark:bg-success-900 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Stock Bajo</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ getLowStockCount() }}</p>
+        </div>
+        <div class="w-12 h-12 bg-warning-100 dark:bg-warning-900 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-warning-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Valor Total Inventario</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-white">${{ getTotalInventoryValue() }}</p>
+        </div>
+        <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex gap-4">
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por nombre o descripción..." class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+    <select [(ngModel)]="filterStatus" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white">
+      <option value="">Todos los estados</option>
+      <option value="active">Activo</option>
+      <option value="inactive">Inactivo</option>
+    </select>
+  </div>
+
+  <!-- Products Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+    <table class="w-full text-sm text-left text-gray-600 dark:text-gray-300">
+      <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        <tr>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Nombre</th>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Descripción</th>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Precio</th>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Stock</th>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Imagen URL</th>
+          <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of getFilteredProducts(); track product.id) {
+        <tr class="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
+          <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">{{ product.nombre }}</td>
+          <td class="px-6 py-4">{{ product.descripcion || 'Sin descripción' }}</td>
+          <td class="px-6 py-4">${{ product.precio.toFixed(2) }}</td>
+          <td class="px-6 py-4">
+            <span [ngClass]="product.stock < 10 ? 'text-error-600' : 'text-success-600'" class="font-medium">
+              {{ product.stock }} unidades
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ product.imagen_url || 'Sin imagen' }}</span>
+          </td>
+          <td class="px-6 py-4 flex gap-2">
+            <button (click)="editProduct(product)" class="text-blue-light-600 hover:underline text-sm font-medium">Editar</button>
+            <button (click)="deleteProduct(product.id!)" class="text-error-600 hover:underline text-sm font-medium">Eliminar</button>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay productos que coincidan con los filtros</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add Product Modal -->
+  @if (showAddModal) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Agregar Nuevo Producto</h3>
+      <form (ngSubmit)="saveNewProduct()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+          <input type="text" [(ngModel)]="newProduct.nombre" name="nombre" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea [(ngModel)]="newProduct.descripcion" name="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio</label>
+          <input type="number" [(ngModel)]="newProduct.precio" name="precio" step="0.01" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
+          <input type="number" [(ngModel)]="newProduct.stock" name="stock" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen URL</label>
+          <input type="url" [(ngModel)]="newProduct.imagen_url" name="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" (click)="closeAddModal()" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancelar</button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  <!-- Edit Product Modal -->
+  @if (showEditModal && editingProduct) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+      <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Editar Producto</h3>
+      <form (ngSubmit)="saveEditedProduct()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+          <input type="text" [(ngModel)]="editingProduct.nombre" name="editNombre" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+          <textarea [(ngModel)]="editingProduct.descripcion" name="editDescripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio</label>
+          <input type="number" [(ngModel)]="editingProduct.precio" name="editPrecio" step="0.01" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
+          <input type="number" [(ngModel)]="editingProduct.stock" name="editStock" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagen URL</label>
+          <input type="url" [(ngModel)]="editingProduct.imagen_url" name="editImagenUrl" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" (click)="closeEditModal()" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancelar</button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>

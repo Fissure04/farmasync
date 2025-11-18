@@ -1,0 +1,305 @@
+/* PAGE LAYOUT */
+.page-container {
+  display: flex;
+  min-height: 100vh;
+  gap: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 24px;
+  border-radius: 16px;
+}
+
+/* SIDEBAR - Chat */
+.sidebar {
+  width: 340px;
+  background: linear-gradient(180deg, #006D71 0%, #004F52 100%);
+  padding: 20px;
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 750px;
+  box-shadow: 0 8px 24px rgba(0, 109, 113, 0.2);
+}
+
+.sidebar h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.user-message, .agent-message {
+  padding: 10px 12px;
+  border-radius: 10px;
+  max-width: 90%;
+  word-wrap: break-word;
+  font-size: 13px;
+  line-height: 1.4;
+  animation: slideIn 0.3s ease;
+}
+
+.user-message {
+  background: #01B6BC;
+  align-self: flex-end;
+  color: white;
+  box-shadow: 0 2px 8px rgba(1, 182, 188, 0.3);
+  font-weight: 500;
+}
+
+.agent-message {
+  background: rgba(0, 128, 128, 0.9);
+  align-self: flex-start;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 128, 128, 0.3);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-input {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input input {
+  width: 100%;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #333;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.chat-input input::placeholder {
+  color: #a0a0a0;
+}
+
+.chat-input input:focus {
+  outline: none;
+  border-color: #01B6BC;
+  box-shadow: 0 0 0 3px rgba(1, 182, 188, 0.15);
+}
+
+.chat-input input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.btn-send {
+  background: linear-gradient(135deg, #01B6BC 0%, #00A3AA 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(1, 182, 188, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00A3AA 0%, #009299 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(1, 182, 188, 0.3);
+}
+
+.btn-send:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(1, 182, 188, 0.3);
+  border-radius: 10px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(1, 182, 188, 0.5);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #006D71;
+  margin-bottom: 8px;
+  padding: 0 10px;
+}
+
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.producto {
+  background: linear-gradient(135deg, #E8FDFF 0%, #ffffff 100%);
+  border: 2px solid #01B6BC;
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 320px;
+  box-shadow: 0 4px 12px rgba(1, 182, 188, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.producto:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(1, 182, 188, 0.3);
+  border-color: #00A3AA;
+}
+
+.producto-image {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #01B6BC 0%, #008080 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+}
+
+.producto h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #006D71;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.descripcion {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.precio {
+  font-size: 18px;
+  font-weight: 700;
+  color: #01B6BC;
+}
+
+.producto button {
+  background: linear-gradient(135deg, #006D71 0%, #004F52 100%);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: auto;
+}
+
+.producto button:hover {
+  background: linear-gradient(135deg, #004F52 0%, #003D40 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 109, 113, 0.2);
+}
+
+.loading {
+  padding: 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-left: 4px solid #2196f3;
+  border-radius: 8px;
+  color: #1976d2;
+  font-weight: 600;
+  text-align: center;
+  margin: 20px 10px;
+}
+
+.error {
+  padding: 16px;
+  background: linear-gradient(135deg, #ffebee 0%, #ffe0e0 100%);
+  border-left: 4px solid #f44336;
+  border-radius: 8px;
+  color: #d32f2f;
+  font-weight: 600;
+  text-align: center;
+  margin: 20px 10px;
+}
+
+.no-data {
+  padding: 40px;
+  text-align: center;
+  color: #a0a0a0;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  border-radius: 12px;
+  border: 2px dashed #e0e0e0;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 20px 10px;
+}
+

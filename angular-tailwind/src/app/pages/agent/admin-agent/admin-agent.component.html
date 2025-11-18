@@ -1,0 +1,55 @@
+<div class="page-container">
+  <!-- Chat Section -->
+  <div class="chat-section">
+    <h3>Agente Admin</h3>
+    <div class="chat-messages">
+      <div *ngFor="let message of messages" class="mb-4">
+        <div [ngClass]="message.type === 'user' ? 'user-message' : 'agent-message'">
+          {{ message.text }}
+        </div>
+      </div>
+      <div *ngIf="loading" class="text-center py-4">
+        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+        <span class="ml-2 text-white">Procesando consulta...</span>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="adminQuery"
+        name="adminQuery"
+        placeholder="Escribe tu mensaje..."
+        [disabled]="loading"
+      />
+      <button
+        id="send-message"
+        type="button"
+        (click)="sendMessage()"
+        [disabled]="loading || !adminQuery.trim()"
+      >
+        ▶
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section" *ngIf="ventas.length > 0">
+    <div class="table-container">
+      <h3 class="table-title">Resultados de Ventas</h3>
+
+      <!-- Sales Table -->
+      <table>
+        <thead>
+          <tr>
+            <th *ngFor="let col of getTableColumns()">{{ humanizeColumnName(col) }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let venta of ventas">
+            <td *ngFor="let col of getTableColumns()">{{ formatCellValue(venta[col]) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: 'active' | 'inactive';
+}
+
+@Component({
+  selector: 'app-inventory-management',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './inventory-management.component.html',
+})
+export class InventoryManagementComponent {
+  products: Product[] = [
+    { id: 1, name: 'Paracetamol 500mg', category: 'Analgésicos', price: 5.99, stock: 150, status: 'active' },
+    { id: 2, name: 'Ibuprofeno 400mg', category: 'Antiinflamatorios', price: 7.50, stock: 85, status: 'active' },
+    { id: 3, name: 'Amoxicilina 500mg', category: 'Antibióticos', price: 12.99, stock: 8, status: 'active' },
+    { id: 4, name: 'Vitamina C 1000mg', category: 'Vitaminas', price: 15.00, stock: 0, status: 'inactive' },
+    { id: 5, name: 'Loratadina 10mg', category: 'Antihistamínicos', price: 8.25, stock: 45, status: 'active' },
+    { id: 6, name: 'Metformina 500mg', category: 'Antidiabéticos', price: 10.50, stock: 120, status: 'active' },
+    { id: 7, name: 'Omeprazol 20mg', category: 'Antiácidos', price: 9.99, stock: 75, status: 'active' },
+    { id: 8, name: 'Atorvastatina 20mg', category: 'Estatinas', price: 14.99, stock: 5, status: 'active' },
+  ];
+
+  searchTerm = '';
+  filterStatus = '';
+
+  openAddProductModal() {
+    alert('Función de agregar producto (por implementar)');
+  }
+
+  editProduct(product: Product) {
+    alert(`Editando producto: ${product.name}`);
+  }
+
+  deleteProduct(id: number) {
+    if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+      this.products = this.products.filter(p => p.id !== id);
+    }
+  }
+
+  getActiveProductsCount(): number {
+    return this.products.filter(p => p.status === 'active').length;
+  }
+
+  getLowStockCount(): number {
+    return this.products.filter(p => p.stock < 10).length;
+  }
+
+  getTotalInventoryValue(): string {
+    const total = this.products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+    return total.toFixed(2);
+  }
+
+  getFilteredProducts(): Product[] {
+    return this.products.filter(product => {
+      const matchesSearch = !this.searchTerm || 
+        product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesStatus = !this.filterStatus || product.status === this.filterStatus;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }
+}
