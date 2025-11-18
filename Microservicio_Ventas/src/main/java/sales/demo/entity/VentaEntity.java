@@ -24,9 +24,6 @@ public class VentaEntity {
     @Column(name = "id_venta")
     private Long id;
 
-    @Column(name = "id_vendedor")
-    private Long idVendedor;
-
     @Column(name = "id_cliente")
     private Long idCliente;
 
@@ -66,14 +63,6 @@ public class VentaEntity {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getIdVendedor() {
-        return idVendedor;
-    }
-
-    public void setIdVendedor(Long idVendedor) {
-        this.idVendedor = idVendedor;
     }
 
     public Long getIdCliente() {

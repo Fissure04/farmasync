@@ -13,9 +13,6 @@ public class VentaDTO {
     @Schema(description = "ID de la venta", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @Schema(description = "ID del vendedor", example = "2", nullable = false)
-    private Long idVendedor;
-
     @Schema(description = "ID del cliente", example = "3", nullable = false)
     private Long idCliente;
 
@@ -32,9 +29,8 @@ public class VentaDTO {
     public VentaDTO() {
     }
 
-    public VentaDTO(Long id, Long idVendedor, Long idCliente, LocalDate fechaVenta, BigDecimal total, List<DetalleVentaDTO> detallesVenta) {
+    public VentaDTO(Long id, Long idCliente, LocalDate fechaVenta, BigDecimal total, List<DetalleVentaDTO> detallesVenta) {
         this.id = id;
-        this.idVendedor = idVendedor;
         this.idCliente = idCliente;
         this.fechaVenta = fechaVenta;
         this.total = total;
@@ -47,14 +43,6 @@ public class VentaDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getIdVendedor() {
-        return idVendedor;
-    }
-
-    public void setIdVendedor(Long idVendedor) {
-        this.idVendedor = idVendedor;
     }
 
     public Long getIdCliente() {

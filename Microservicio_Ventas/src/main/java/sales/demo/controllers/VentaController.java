@@ -118,18 +118,6 @@ public class VentaController {
 		return ResponseEntity.ok(ventas);
 	}
 
-	@GetMapping("/vendedor/{idVendedor}")
-	@Operation(summary = "Obtener ventas por ID de vendedor", description = "Devuelve una lista de ventas asociadas a un vendedor específico.")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Lista de ventas obtenida exitosamente"),
-			@ApiResponse(responseCode = "500", description = "Error Interno del Servidor")
-	})
-	public ResponseEntity<List<VentaDTO>> obtenerVentasPorVendedorId(
-			@Parameter(description = "ID del vendedor cuyas ventas se desean obtener", required = true) @PathVariable Long idVendedor) {
-		List<VentaDTO> ventas = ventaService.obtenerVentasPorVendedorId(idVendedor);
-		return ResponseEntity.ok(ventas);
-	}
-
 	@GetMapping("/fecha")
 	@Operation(summary = "Obtener ventas por rango de fechas", description = "Devuelve una lista de ventas realizadas dentro de un rango de fechas específico.")
 	@ApiResponses(value = {
