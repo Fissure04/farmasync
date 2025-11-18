@@ -13,8 +13,6 @@ public interface VentaRepository extends JpaRepository<VentaEntity, Long> {
 
     List<VentaEntity> findByIdCliente(Long idCliente);
 
-    List<VentaEntity> findByIdVendedor(Long idVendedor);
-
     @Query("SELECT v FROM VentaEntity v WHERE v.fechaVenta BETWEEN :fechaInicio AND :fechaFin")
     List<VentaEntity> findByFechaVentaBetween(@Param("fechaInicio") LocalDate fechaInicio, 
         @Param("fechaFin") LocalDate fechaFin);

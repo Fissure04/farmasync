@@ -85,7 +85,7 @@ public class VentaService {
             restTemplate.postForObject(urlSalida, movimiento, Void.class);
         }
 
-        crearHistorialVenta(ventaEntity, "Registro", ventaEntity.getIdVendedor(), "Nueva venta registrada");
+        crearHistorialVenta(ventaEntity, "Registro", "Nueva venta registrada");
         return ventaMapper.toDTO(ventaGuardada);
     }
 
@@ -105,7 +105,6 @@ public class VentaService {
     public VentaDTO actualizarVenta(Long id, VentaDTO ventaDTO) {
         VentaEntity ventaExistente = ventaRepository.findById(id).orElseThrow(() -> new RuntimeException("Venta no encontrada con el ID: " + id));
 
-        ventaExistente.setIdVendedor(ventaDTO.getIdVendedor());
         ventaExistente.setIdCliente(ventaDTO.getIdCliente());
         ventaExistente.setTotal(ventaDTO.getTotal());
 
@@ -121,7 +120,7 @@ public class VentaService {
 
         VentaEntity ventaActualizada = ventaRepository.save(ventaExistente);
 
-        crearHistorialVenta(ventaExistente, "Actualización", id, "Venta actualizada");
+        crearHistorialVenta(ventaExistente, "Actualización", "Venta actualizada");
 
         return ventaMapper.toDTO(ventaActualizada);
     }
@@ -159,12 +158,6 @@ public class VentaService {
     }
 
     @Transactional(readOnly = true)
-    public List<VentaDTO> obtenerVentasPorVendedorId(Long idVendedor) {
-        List<VentaEntity> ventas = ventaRepository.findByIdVendedor(idVendedor);
-        return ventaMapper.toDTOList(ventas);
-    }
-
-    @Transactional(readOnly = true)
     public List<VentaDTO> obtenerVentasPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         List<VentaEntity> ventas = ventaRepository.findByFechaVentaBetween(fechaInicio, fechaFin);
         return ventaMapper.toDTOList(ventas);
@@ -190,12 +183,11 @@ public class VentaService {
         }
     }
 
-    private void crearHistorialVenta(VentaEntity venta, String tipoEvento, Long idUsuario, String observacion) {
+    private void crearHistorialVenta(VentaEntity venta, String tipoEvento, String observacion) {
         HistorialVentaEntity historial = new HistorialVentaEntity();
         historial.setVenta(venta);
         historial.setFechaEvento(LocalDate.now());
         historial.setTipoEvento(tipoEvento);
-        historial.setIdUsuario(idUsuario);
         historial.setObservacion(observacion);
 
         historialVentaRepository.save(historial);

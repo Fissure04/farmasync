@@ -22,7 +22,7 @@ public class VentaMapper {
         
         List<DetalleVentaDTO> detallesDTO = entity.getDetalles().stream().map(this::toDetalleDTO).collect(Collectors.toList());
 
-        return new VentaDTO(entity.getId(), entity.getIdVendedor(), entity.getIdCliente(),
+        return new VentaDTO(entity.getId(), entity.getIdCliente(),
                 entity.getFechaVenta(), entity.getTotal(), detallesDTO);
     }
 
@@ -32,7 +32,6 @@ public class VentaMapper {
 
         VentaEntity entity = new VentaEntity();
         entity.setId(dto.getId());
-        entity.setIdVendedor(dto.getIdVendedor());
         entity.setIdCliente(dto.getIdCliente());
         entity.setFechaVenta(LocalDate.now());
         entity.setTotal(dto.getTotal());
