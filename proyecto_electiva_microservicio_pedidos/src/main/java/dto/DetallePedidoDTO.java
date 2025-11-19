@@ -8,7 +8,7 @@ public class DetallePedidoDTO {
 	private Long idDetalle;
 
 	@NotNull(message = "El ID del producto es obligatorio")
-	private Long idProductoPedido;
+	private String idProductoPedido;
 
 	@NotNull(message = "La cantidad es obligatoria")
 	@Min(value = 1, message = "La cantidad debe ser al menos 1")
@@ -17,7 +17,7 @@ public class DetallePedidoDTO {
 	public DetallePedidoDTO() {
 	}
 
-	public DetallePedidoDTO(Long idDetalle, Long idProductoPedido, Integer cantidad) {
+	public DetallePedidoDTO(Long idDetalle, String idProductoPedido, Integer cantidad) {
 		this.idDetalle = idDetalle;
 		this.idProductoPedido = idProductoPedido;
 		this.cantidad = cantidad;
@@ -31,11 +31,11 @@ public class DetallePedidoDTO {
 		this.idDetalle = idDetalle;
 	}
 
-	public Long getIdProductoPedido() {
+	public String getIdProductoPedido() {
 		return idProductoPedido;
 	}
 
-	public void setIdProductoPedido(Long idProductoPedido) {
+	public void setIdProductoPedido(String idProductoPedido) {
 		this.idProductoPedido = idProductoPedido;
 	}
 

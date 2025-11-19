@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import model.Pedido;
+import Model.Pedido;
 
 @Repository
 public class PedidoRepository {

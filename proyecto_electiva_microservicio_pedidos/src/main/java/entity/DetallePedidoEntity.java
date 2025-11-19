@@ -30,7 +30,7 @@ public class DetallePedidoEntity {
     private PedidoEntity pedido;
 
     @Column(name = "id_producto_pedido", nullable = false)
-    private Long idProductoPedido;
+    private String idProductoPedido;
 
     @Column(name = "cantidad", nullable = false)
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
@@ -65,11 +65,11 @@ public class DetallePedidoEntity {
 		this.pedido = pedido;
 	}
 
-	public Long getIdProductoPedido() {
+	public String getIdProductoPedido() {
 		return idProductoPedido;
 	}
 
-	public void setIdProductoPedido(Long idProductoPedido) {
+	public void setIdProductoPedido(String idProductoPedido) {
 		this.idProductoPedido = idProductoPedido;
 	}
 
