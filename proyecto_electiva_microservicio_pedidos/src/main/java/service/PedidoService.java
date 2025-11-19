@@ -3,6 +3,8 @@ package service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import dto.DetallePedidoDTO;
 import dto.HistorialEstadoDTO;
@@ -34,22 +36,43 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
 	private final NewPedidoRepository pedidoRepository;
-	//private final DetallePedidoRepository detallePedidoRepository;
+	// private final DetallePedidoRepository detallePedidoRepository;
 	private final HistorialPedidoRepository historialRepository;
 	private final PedidoMapper pedidoMapper;
+	private final RestTemplate restTemplate;
+
+	private static final String INVENTARIO_SERVICE_URL = "http://localhost:8016/farmasync/inventario";
 
 	@Autowired
 	public PedidoService(NewPedidoRepository pedidoRepository, DetallePedidoRepository detallePedidoRepository,
-			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper) {
+			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper, RestTemplate restTemplate) {
 		this.pedidoRepository = pedidoRepository;
-		//this.detallePedidoRepository = detallePedidoRepository;
 		this.historialRepository = historialRepository;
 		this.pedidoMapper = pedidoMapper;
+		this.restTemplate = restTemplate;
 	}
 
-	
 	public PedidoDTO crearPedido(PedidoDTO pedidoDTO) {
 		validarPedido(pedidoDTO);
+
+		for (DetallePedidoDTO detalle : pedidoDTO.getDetalles()) {
+			String urlProducto = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido();
+			try {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> producto = restTemplate.getForObject(urlProducto, Map.class);
+				if (producto == null) {
+					throw new PedidoBusinessException(
+							"Producto no encontrado en inventario con ID: " + detalle.getIdProductoPedido());
+				}
+
+			} catch (HttpClientErrorException.NotFound nf) {
+				throw new PedidoBusinessException(
+						"Producto no encontrado en inventario con ID: " + detalle.getIdProductoPedido());
+			} catch (Exception ex) {
+				throw new PedidoBusinessException("Error al consultar inventario para producto ID: "
+						+ detalle.getIdProductoPedido() + " -> " + ex.getMessage());
+			}
+		}
 
 		PedidoEntity pedidoEntity = pedidoMapper.toEntity(pedidoDTO);
 
@@ -65,6 +88,19 @@ public class PedidoService {
 		pedidoEntity.getDetalles().forEach(detalle -> detalle.setPedido(pedidoEntity));
 
 		PedidoEntity pedidoGuardado = pedidoRepository.save(pedidoEntity);
+
+		for (DetallePedidoDTO detalle : pedidoDTO.getDetalles()) {
+			String urlEntrada = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido() + "/entrada";
+			Map<String, Integer> movimiento = Map.of("cantidad", detalle.getCantidad());
+			try {
+				restTemplate.postForObject(urlEntrada, movimiento, Void.class);
+			} catch (Exception ex) {
+				
+				throw new PedidoBusinessException(
+						"No fue posible registrar la entrada en inventario para el producto ID: "
+								+ detalle.getIdProductoPedido() + ". Error: " + ex.getMessage());
+			}
+		}
 
 		crearRegistroHistorial(pedidoGuardado, pedidoGuardado.getEstado(), pedidoGuardado.getIdUsuarioCreador(),
 				"Pedido creado");
