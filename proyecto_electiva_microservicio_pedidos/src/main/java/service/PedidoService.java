@@ -43,7 +43,6 @@ public class PedidoService {
 
 	private static final String INVENTARIO_SERVICE_URL = "http://localhost:8016/farmasync/inventario";
 
-	@Autowired
 	public PedidoService(NewPedidoRepository pedidoRepository, DetallePedidoRepository detallePedidoRepository,
 			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper, RestTemplate restTemplate) {
 		this.pedidoRepository = pedidoRepository;
