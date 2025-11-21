@@ -1,0 +1,66 @@
+.perfil{
+    background-color: #ffffff;
+    width: 100%;
+    min-width: 1440px;
+    min-height: 1040px;
+    position: relative;
+}
+.perfil .group{
+    position: absolute;
+    top: 822px;
+    left: 0;
+    width: 1440px;
+    height: 218px;
+    display: flex;
+    background-color: #d9d9d9;
+}
+.perfil .div{
+    margin-top: 52px;
+    width: 810px;
+    height: 114px;
+    margin-left: 315px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.perfil .rectangle{
+    height: 50px;
+    background-color: #f4f1f1;
+}
+.perfil .rectangle-2{
+    margin-left: 174px;
+    width: 461px;
+    height: 50px;
+    background-color: #f4f1f1;
+}
+.perfil .group-2{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1440px;
+    height: 187px;
+    display: flex;
+    background-color: #d9d9d9;
+}
+.perfil .rectangle-3{
+    margin-top: 60px;
+    width: 241px;
+    height: 69px;
+    margin-left: 33px;
+    background-color: #fff8f8;
+}
+
+.perfil .rectangle-4{
+    margin-top: 78px;
+    width: 156px;
+    height: 32px;
+    margin-left: 35px;
+    background-color: #a6a6a6;
+}
+.perfil .rectangle-5{
+    margin-top: 78px;
+    width: 156px;
+    height: 32px;
+    margin-left: 24px;
+    background-color: #a6a6a6;
+}
