@@ -89,19 +89,6 @@ public class PedidoService {
 
 		PedidoEntity pedidoGuardado = pedidoRepository.save(pedidoEntity);
 
-		for (DetallePedidoDTO detalle : pedidoDTO.getDetalles()) {
-			String urlEntrada = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido() + "/entrada";
-			Map<String, Integer> movimiento = Map.of("cantidad", detalle.getCantidad());
-			try {
-				restTemplate.postForObject(urlEntrada, movimiento, Void.class);
-			} catch (Exception ex) {
-				
-				throw new PedidoBusinessException(
-						"No fue posible registrar la entrada en inventario para el producto ID: "
-								+ detalle.getIdProductoPedido() + ". Error: " + ex.getMessage());
-			}
-		}
-
 		crearRegistroHistorial(pedidoGuardado, pedidoGuardado.getEstado(), pedidoGuardado.getIdUsuarioCreador(),
 				"Pedido creado");
 
@@ -169,6 +156,20 @@ public class PedidoService {
 
 		EstadoPedido estadoAnterior = pedido.getEstado();
 		pedido.setEstado(nuevoEstado);
+
+		if (nuevoEstado == EstadoPedido.ENTREGADO && estadoAnterior != EstadoPedido.ENTREGADO) {
+			for (DetallePedidoEntity detalle : pedido.getDetalles()) {
+				String urlEntrada = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido() + "/entrada";
+				Map<String, Integer> movimiento = Map.of("cantidad", detalle.getCantidad());
+				try {
+					restTemplate.postForObject(urlEntrada, movimiento, Void.class);
+				} catch (Exception ex) {
+					throw new PedidoBusinessException(
+							"No fue posible registrar la entrada en inventario para el producto ID: "
+									+ detalle.getIdProductoPedido() + ". Error: " + ex.getMessage());
+				}
+			}
+		}
 
 		if (nuevoEstado == EstadoPedido.ENTREGADO) {
 			pedido.setFechaEntrega(LocalDate.now());
