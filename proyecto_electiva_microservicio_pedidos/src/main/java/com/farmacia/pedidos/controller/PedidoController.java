@@ -1,4 +1,4 @@
-package controller;
+package com.farmacia.pedidos.controller;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.HistorialEstadoDTO;
-import dto.PedidoDTO;
-import entity.EstadoPedido;
+import com.farmacia.pedidos.dto.HistorialEstadoDTO;
+import com.farmacia.pedidos.dto.PedidoDTO;
+import com.farmacia.pedidos.entity.EstadoPedido;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import service.PedidoService;
+import com.farmacia.pedidos.service.PedidoService;
 
 @RestController
 @RequestMapping("/farmasync/pedidos")

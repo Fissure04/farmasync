@@ -1,4 +1,4 @@
-package mapper;
+package com.farmacia.pedidos.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import dto.DetallePedidoDTO;
-import dto.HistorialEstadoDTO;
-import dto.PedidoDTO;
-import entity.DetallePedidoEntity;
-import entity.EstadoPedido;
-import entity.HistorialEstadoPedidoEntity;
-import entity.PedidoEntity;
+import com.farmacia.pedidos.dto.DetallePedidoDTO;
+import com.farmacia.pedidos.dto.HistorialEstadoDTO;
+import com.farmacia.pedidos.dto.PedidoDTO;
+import com.farmacia.pedidos.entity.DetallePedidoEntity;
+import com.farmacia.pedidos.entity.EstadoPedido;
+import com.farmacia.pedidos.entity.HistorialEstadoPedidoEntity;
+import com.farmacia.pedidos.entity.PedidoEntity;
 
 @Component
 public class PedidoMapper {

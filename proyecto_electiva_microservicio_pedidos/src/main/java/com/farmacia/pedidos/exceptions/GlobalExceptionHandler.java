@@ -1,4 +1,4 @@
-package exceptions;
+package com.farmacia.pedidos.exceptions;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;

@@ -1,8 +1,8 @@
-package dto;
+package com.farmacia.pedidos.dto;
 
 import java.time.LocalDateTime;
 
-import entity.EstadoPedido;
+import com.farmacia.pedidos.entity.EstadoPedido;
 
 public class HistorialEstadoDTO {
 

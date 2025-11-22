@@ -1,4 +1,4 @@
-package entity;
+package com.farmacia.pedidos.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

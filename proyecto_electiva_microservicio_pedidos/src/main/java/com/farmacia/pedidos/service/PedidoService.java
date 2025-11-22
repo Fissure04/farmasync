@@ -1,22 +1,25 @@
-package service;
+package com.farmacia.pedidos.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+/* import org.springframework.beans.factory.annotation.Autowired; */
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
-import dto.DetallePedidoDTO;
-import dto.HistorialEstadoDTO;
-import dto.PedidoDTO;
-import entity.DetallePedidoEntity;
-import entity.EstadoPedido;
-import entity.HistorialEstadoPedidoEntity;
-import entity.PedidoEntity;
-import exceptions.PedidoBusinessException;
-import exceptions.PedidoNotFoundException;
-import mapper.PedidoMapper;
-import repository.DetallePedidoRepository;
-import repository.HistorialPedidoRepository;
-import repository.NewPedidoRepository;
+import com.farmacia.pedidos.dto.DetallePedidoDTO;
+import com.farmacia.pedidos.dto.HistorialEstadoDTO;
+import com.farmacia.pedidos.dto.PedidoDTO;
+import com.farmacia.pedidos.entity.DetallePedidoEntity;
+import com.farmacia.pedidos.entity.EstadoPedido;
+import com.farmacia.pedidos.entity.HistorialEstadoPedidoEntity;
+import com.farmacia.pedidos.entity.PedidoEntity;
+import com.farmacia.pedidos.exceptions.PedidoBusinessException;
+import com.farmacia.pedidos.exceptions.PedidoNotFoundException;
+import com.farmacia.pedidos.mapper.PedidoMapper;
+import com.farmacia.pedidos.repository.DetallePedidoRepository;
+import com.farmacia.pedidos.repository.HistorialPedidoRepository;
+import com.farmacia.pedidos.repository.NewPedidoRepository;
+import com.farmacia.pedidos.inventoryclient.InventoryClient;
 
 // Java Standard Library
 import java.math.BigDecimal;
@@ -34,22 +37,44 @@ import java.util.stream.Collectors;
 public class PedidoService {
 
 	private final NewPedidoRepository pedidoRepository;
-	//private final DetallePedidoRepository detallePedidoRepository;
+	// private final DetallePedidoRepository detallePedidoRepository;
 	private final HistorialPedidoRepository historialRepository;
 	private final PedidoMapper pedidoMapper;
+	private final RestTemplate restTemplate;
+	private final InventoryClient inventoryClient;
 
-	@Autowired
+	private static final String INVENTARIO_SERVICE_URL = "http://localhost:8016/farmasync/inventario";
+
 	public PedidoService(NewPedidoRepository pedidoRepository, DetallePedidoRepository detallePedidoRepository,
-			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper) {
+			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper, RestTemplate restTemplate, InventoryClient inventoryClient) {
 		this.pedidoRepository = pedidoRepository;
-		//this.detallePedidoRepository = detallePedidoRepository;
 		this.historialRepository = historialRepository;
 		this.pedidoMapper = pedidoMapper;
+		this.restTemplate = restTemplate;
+		this.inventoryClient = inventoryClient;
 	}
 
-	
 	public PedidoDTO crearPedido(PedidoDTO pedidoDTO) {
 		validarPedido(pedidoDTO);
+
+		for (DetallePedidoDTO detalle : pedidoDTO.getDetalles()) {
+			String urlProducto = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido();
+			try {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> producto = restTemplate.getForObject(urlProducto, Map.class);
+				if (producto == null) {
+					throw new PedidoBusinessException(
+							"Producto no encontrado en inventario con ID: " + detalle.getIdProductoPedido());
+				}
+
+			} catch (HttpClientErrorException.NotFound nf) {
+				throw new PedidoBusinessException(
+						"Producto no encontrado en inventario con ID: " + detalle.getIdProductoPedido());
+			} catch (Exception ex) {
+				throw new PedidoBusinessException("Error al consultar inventario para producto ID: "
+						+ detalle.getIdProductoPedido() + " -> " + ex.getMessage());
+			}
+		}
 
 		PedidoEntity pedidoEntity = pedidoMapper.toEntity(pedidoDTO);
 
@@ -65,6 +90,19 @@ public class PedidoService {
 		pedidoEntity.getDetalles().forEach(detalle -> detalle.setPedido(pedidoEntity));
 
 		PedidoEntity pedidoGuardado = pedidoRepository.save(pedidoEntity);
+
+		for (DetallePedidoDTO detalle : pedidoDTO.getDetalles()) {
+			String urlEntrada = INVENTARIO_SERVICE_URL + "/" + detalle.getIdProductoPedido() + "/entrada";
+			Map<String, Integer> movimiento = Map.of("cantidad", detalle.getCantidad());
+			try {
+				restTemplate.postForObject(urlEntrada, movimiento, Void.class);
+			} catch (Exception ex) {
+
+				throw new PedidoBusinessException(
+						"No fue posible registrar la entrada en inventario para el producto ID: "
+								+ detalle.getIdProductoPedido() + ". Error: " + ex.getMessage());
+			}
+		}
 
 		crearRegistroHistorial(pedidoGuardado, pedidoGuardado.getEstado(), pedidoGuardado.getIdUsuarioCreador(),
 				"Pedido creado");
@@ -91,7 +129,7 @@ public class PedidoService {
 		if (pedidoExistente.getEstado() == EstadoPedido.ENTREGADO
 				|| pedidoExistente.getEstado() == EstadoPedido.CANCELADO) {
 			throw new PedidoBusinessException(
-					"No se puede actualizar un pedido con estado: " + pedidoExistente.getEstado());
+					"No se puede actualizar el pedido, ya que esta: " + pedidoExistente.getEstado());
 		}
 
 		pedidoExistente.setIdProveedor(pedidoDTO.getIdProveedor());
@@ -127,21 +165,39 @@ public class PedidoService {
 	}
 
 	public PedidoDTO cambiarEstadoPedido(Long id, EstadoPedido nuevoEstado, Long idUsuario, String observaciones) {
-		PedidoEntity pedido = pedidoRepository.findById(id).orElseThrow(() -> new PedidoNotFoundException(id));
+
+		PedidoEntity pedido = pedidoRepository.findById(id)
+				.orElseThrow(() -> new PedidoNotFoundException(id));
 
 		validarTransicionEstado(pedido.getEstado(), nuevoEstado);
 
 		EstadoPedido estadoAnterior = pedido.getEstado();
 		pedido.setEstado(nuevoEstado);
 
-		if (nuevoEstado == EstadoPedido.ENTREGADO) {
+		// Si pasa a ENTREGADO → aumentar stock en inventario
+		if (estadoAnterior != EstadoPedido.ENTREGADO && nuevoEstado == EstadoPedido.ENTREGADO) {
+
+			// Recorrer los productos del pedido
+			pedido.getDetalles().forEach(detalle -> {
+				String idProducto = detalle.getIdProductoPedido();
+				int cantidad = detalle.getCantidad();
+
+				// Llamada al microservicio de inventario
+				inventoryClient.aumentarStock(idProducto, cantidad);
+			});
+
 			pedido.setFechaEntrega(LocalDate.now());
 		}
 
 		PedidoEntity pedidoActualizado = pedidoRepository.save(pedido);
 
-		crearRegistroHistorial(pedidoActualizado, nuevoEstado, idUsuario,
-				observaciones != null ? observaciones : "Cambio de estado: " + estadoAnterior + " → " + nuevoEstado);
+		crearRegistroHistorial(
+				pedidoActualizado,
+				nuevoEstado,
+				idUsuario,
+				observaciones != null
+						? observaciones
+						: "Cambio de estado: " + estadoAnterior + " → " + nuevoEstado);
 
 		return pedidoMapper.toDTO(pedidoActualizado);
 	}
