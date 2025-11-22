@@ -1,25 +1,25 @@
-package service;
+package com.farmacia.pedidos.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+/* import org.springframework.beans.factory.annotation.Autowired; */
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import dto.DetallePedidoDTO;
-import dto.HistorialEstadoDTO;
-import dto.PedidoDTO;
-import entity.DetallePedidoEntity;
-import entity.EstadoPedido;
-import entity.HistorialEstadoPedidoEntity;
-import entity.PedidoEntity;
-import exceptions.PedidoBusinessException;
-import exceptions.PedidoNotFoundException;
-import mapper.PedidoMapper;
-import repository.DetallePedidoRepository;
-import repository.HistorialPedidoRepository;
-import repository.NewPedidoRepository;
-import inventoryclient.InventoryClient;
+import com.farmacia.pedidos.dto.DetallePedidoDTO;
+import com.farmacia.pedidos.dto.HistorialEstadoDTO;
+import com.farmacia.pedidos.dto.PedidoDTO;
+import com.farmacia.pedidos.entity.DetallePedidoEntity;
+import com.farmacia.pedidos.entity.EstadoPedido;
+import com.farmacia.pedidos.entity.HistorialEstadoPedidoEntity;
+import com.farmacia.pedidos.entity.PedidoEntity;
+import com.farmacia.pedidos.exceptions.PedidoBusinessException;
+import com.farmacia.pedidos.exceptions.PedidoNotFoundException;
+import com.farmacia.pedidos.mapper.PedidoMapper;
+import com.farmacia.pedidos.repository.DetallePedidoRepository;
+import com.farmacia.pedidos.repository.HistorialPedidoRepository;
+import com.farmacia.pedidos.repository.NewPedidoRepository;
+import com.farmacia.pedidos.inventoryclient.InventoryClient;
 
 // Java Standard Library
 import java.math.BigDecimal;

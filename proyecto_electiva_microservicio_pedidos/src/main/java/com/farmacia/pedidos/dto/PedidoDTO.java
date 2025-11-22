@@ -1,4 +1,4 @@
-package dto;
+package com.farmacia.pedidos.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import entity.EstadoPedido;
+import com.farmacia.pedidos.entity.EstadoPedido;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;

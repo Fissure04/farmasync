@@ -1,4 +1,4 @@
-package entity;
+package com.farmacia.pedidos.entity;
 
 public enum EstadoPedido {
 	PENDIENTE,

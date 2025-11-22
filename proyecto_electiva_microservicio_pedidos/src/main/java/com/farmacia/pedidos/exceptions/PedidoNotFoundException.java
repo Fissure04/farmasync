@@ -1,4 +1,4 @@
-package exceptions;
+package com.farmacia.pedidos.exceptions;
 
 public class PedidoNotFoundException extends RuntimeException {
 

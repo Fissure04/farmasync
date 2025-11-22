@@ -1,4 +1,4 @@
-package dto;
+package com.farmacia.pedidos.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

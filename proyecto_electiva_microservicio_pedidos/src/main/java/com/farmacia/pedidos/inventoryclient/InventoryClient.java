@@ -1,4 +1,4 @@
-package inventoryclient;
+package com.farmacia.pedidos.inventoryclient;
 
 import java.util.Map;
 
