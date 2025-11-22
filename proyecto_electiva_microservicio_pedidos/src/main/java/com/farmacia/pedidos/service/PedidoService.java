@@ -46,7 +46,8 @@ public class PedidoService {
 	private static final String INVENTARIO_SERVICE_URL = "http://localhost:8016/farmasync/inventario";
 
 	public PedidoService(NewPedidoRepository pedidoRepository, DetallePedidoRepository detallePedidoRepository,
-			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper, RestTemplate restTemplate, InventoryClient inventoryClient) {
+			HistorialPedidoRepository historialRepository, PedidoMapper pedidoMapper, RestTemplate restTemplate,
+			InventoryClient inventoryClient) {
 		this.pedidoRepository = pedidoRepository;
 		this.historialRepository = historialRepository;
 		this.pedidoMapper = pedidoMapper;
@@ -124,20 +125,25 @@ public class PedidoService {
 	}
 
 	public PedidoDTO actualizarPedido(Long id, PedidoDTO pedidoDTO) {
-		PedidoEntity pedidoExistente = pedidoRepository.findById(id).orElseThrow(() -> new PedidoNotFoundException(id));
 
+		PedidoEntity pedidoExistente = pedidoRepository.findById(id)
+				.orElseThrow(() -> new PedidoNotFoundException(id));
+
+		// No permitir actualizar si está entregado o cancelado
 		if (pedidoExistente.getEstado() == EstadoPedido.ENTREGADO
 				|| pedidoExistente.getEstado() == EstadoPedido.CANCELADO) {
 			throw new PedidoBusinessException(
-					"No se puede actualizar el pedido, ya que esta: " + pedidoExistente.getEstado());
+					"No se puede actualizar el pedido, ya que está: " + pedidoExistente.getEstado());
 		}
 
+		// Actualizar valores simples
 		pedidoExistente.setIdProveedor(pedidoDTO.getIdProveedor());
 		pedidoExistente.setObservaciones(pedidoDTO.getObservaciones());
 		pedidoExistente.setFechaEntrega(pedidoDTO.getFechaEntrega());
-		pedidoExistente.setTotal(pedidoDTO.getTotal());
 
+		// Reemplazar detalles correctamente
 		if (pedidoDTO.getDetalles() != null && !pedidoDTO.getDetalles().isEmpty()) {
+
 			pedidoExistente.getDetalles().clear();
 
 			pedidoDTO.getDetalles().forEach(detalleDTO -> {
@@ -146,9 +152,21 @@ public class PedidoService {
 			});
 		}
 
+		// Recalcular total si viene null o 0
+		if (pedidoDTO.getTotal() == null || pedidoDTO.getTotal().compareTo(BigDecimal.ZERO) == 0) {
+			BigDecimal nuevoTotal = calcularTotalPedido(pedidoDTO);
+			pedidoExistente.setTotal(nuevoTotal);
+		} else {
+			pedidoExistente.setTotal(pedidoDTO.getTotal());
+		}
+
 		PedidoEntity pedidoActualizado = pedidoRepository.save(pedidoExistente);
 
-		crearRegistroHistorial(pedidoActualizado, pedidoActualizado.getEstado(), pedidoDTO.getIdUsuarioCreador(),
+		// Registrar historial
+		crearRegistroHistorial(
+				pedidoActualizado,
+				pedidoActualizado.getEstado(),
+				pedidoDTO.getIdUsuarioCreador(),
 				"Pedido actualizado");
 
 		return pedidoMapper.toDTO(pedidoActualizado);
