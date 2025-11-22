@@ -17,14 +17,14 @@
             <app-label>
               Nombre<span class="text-error-500">*</span>
             </app-label>
-            <app-input-field type="text" [value]="fname" id="fname" name="fname" placeholder="Ingresa tu nombre" required />
+            <app-input-field type="text" [value]="fname" (valueChange)="fname = '' + $event" id="fname" name="fname" placeholder="Ingresa tu nombre" required />
           </div>
           <!-- Last Name -->
           <div class="sm:col-span-1">
             <app-label>
               Apellido<span class="text-error-500">*</span>
             </app-label>
-            <app-input-field type="text" [value]="lname" id="lname" name="lname" placeholder="Ingresa tu apellido" required />
+            <app-input-field type="text" [value]="lname" (valueChange)="lname = '' + $event" id="lname" name="lname" placeholder="Ingresa tu apellido" required />
           </div>
         </div>
         <!-- Username -->
@@ -32,35 +32,35 @@
           <app-label>
             Nombre de usuario <span class="text-error-500">*</span>
           </app-label>
-          <app-input-field type="text" [value]="username" id="username" name="username" placeholder="Ingresa tu nombre de usuario" required />
+          <app-input-field type="text" [value]="username" (valueChange)="username = '' + $event" id="username" name="username" placeholder="Ingresa tu nombre de usuario" required />
         </div>
         <!-- Email -->
         <div>
           <app-label>
             Correo electrónico <span class="text-error-500">*</span>
           </app-label>
-          <app-input-field type="email" [value]="email" id="email" name="email" placeholder="Ingresa tu correo" required />
+          <app-input-field type="email" [value]="email" (valueChange)="email = '' + $event" id="email" name="email" placeholder="Ingresa tu correo" required />
         </div>
         <!-- Phone -->
         <div>
           <app-label>
             Teléfono
           </app-label>
-          <app-input-field type="tel" [value]="phone" id="phone" name="phone" placeholder="Ingresa tu teléfono" />
+          <app-input-field type="tel" [value]="phone" (valueChange)="phone = '' + $event" id="phone" name="phone" placeholder="Ingresa tu teléfono" />
         </div>
         <!-- Address -->
         <div>
           <app-label>
             Dirección
           </app-label>
-          <app-input-field type="text" [value]="address" id="address" name="address" placeholder="Ingresa tu dirección" />
+          <app-input-field type="text" [value]="address" (valueChange)="address = '' + $event" id="address" name="address" placeholder="Ingresa tu dirección" />
         </div>
         <!-- Password -->
         <div>
           <app-label>Contraseña <span class="text-error-500">*</span></app-label>
           <div class="relative">
             <app-input-field [type]="showPassword ? 'text' : 'password'" placeholder="Ingresa tu contraseña"
-              [value]="password" name="password" class="form-input" required />
+              [value]="password" (valueChange)="password = '' + $event" name="password" class="form-input" required />
             <span (click)="togglePasswordVisibility()" class="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2">
               @if (showPassword) {
               <svg width="1em" height="1em" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"

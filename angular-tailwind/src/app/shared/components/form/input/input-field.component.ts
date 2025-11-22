@@ -12,6 +12,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
         [name]="name"
         [placeholder]="placeholder"
         [value]="value"
+        [required]="isRequired"
         [min]="min"
         [max]="max"
         [step]="step"
@@ -39,7 +40,8 @@ export class InputFieldComponent {
   @Input() id?: string = '';
   @Input() name?: string = '';
   @Input() placeholder?: string = '';
-  @Input() value: string | number = '';
+  @Input() value?: string | number = '';
+  @Input() required: boolean | string = false;
   @Input() min?: string;
   @Input() max?: string;
   @Input() step?: number;
@@ -64,6 +66,11 @@ export class InputFieldComponent {
       inputClasses += ` bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90  dark:focus:border-brand-800`;
     }
     return inputClasses;
+  }
+
+  get isRequired(): boolean {
+    // allow templates to pass `required` as attribute (empty string) or as boolean
+    return this.required === '' || this.required === true || this.required === 'true' || this.required === 'required';
   }
 
   onInput(event: Event) {

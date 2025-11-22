@@ -40,13 +40,13 @@ export const routes: Routes = [
   },
   {
     path:'',
+    redirectTo: '/signin',
+    pathMatch: 'full',
+  },
+  {
+    path:'',
     component:AppLayoutComponent,
     children:[
-      {
-        path: '',
-        redirectTo: '/dashboard',
-        pathMatch: 'full',
-      },
       {
         path: 'dashboard',
         component: EcommerceComponent,

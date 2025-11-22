@@ -34,22 +34,32 @@
 
   <!-- Results Section -->
   <div class="results-section" *ngIf="ventas.length > 0">
-    <div class="table-container">
-      <h3 class="table-title">Resultados de Ventas</h3>
-
-      <!-- Sales Table -->
-      <table>
-        <thead>
-          <tr>
-            <th *ngFor="let col of getTableColumns()">{{ humanizeColumnName(col) }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let venta of ventas">
-            <td *ngFor="let col of getTableColumns()">{{ formatCellValue(venta[col]) }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- If ventas look like products, render product cards with Add to Cart button -->
+    <div *ngIf="isProductList(); else tableResults">
+      <h3 class="table-title">Productos encontrados</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <app-product-card *ngFor="let p of ventas" [product]="p"></app-product-card>
+      </div>
     </div>
+
+    <ng-template #tableResults>
+      <div class="table-container">
+        <h3 class="table-title">Resultados de Ventas</h3>
+
+        <!-- Sales Table -->
+        <table>
+          <thead>
+            <tr>
+              <th *ngFor="let col of getTableColumns()">{{ humanizeColumnName(col) }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let venta of ventas">
+              <td *ngFor="let col of getTableColumns()">{{ formatCellValue(venta[col]) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-template>
   </div>
 </div>

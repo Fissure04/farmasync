@@ -16,7 +16,7 @@ import { Component, Input } from '@angular/core';
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">{{ description }}</p>
         <div class="flex items-center justify-between">
           <div class="text-sm font-medium text-brand-600 dark:text-brand-400">{{ price }}</div>
-          <button class="px-3 py-1 rounded-lg bg-brand-500 text-white text-xs hover:bg-brand-600 transition">Comprar</button>
+          <button class="px-3 py-1 rounded-lg bg-brand-500 text-white text-xs hover:bg-brand-600 transition" (click)="addToCart()">Agregar al carrito</button>
         </div>
       </div>
     </div>
@@ -24,9 +24,47 @@ import { Component, Input } from '@angular/core';
   styles: [],
 })
 export class ProductCardComponent {
+  @Input() id?: string;
+  @Input() stock?: number;
   @Input() title = 'Producto';
   @Input() description = '';
   @Input() price = '$0.00';
   @Input() image = '/public/images/product/default.png';
   @Input() badge = '';
+
+  addToCart() {
+    try {
+      const cartRaw = localStorage.getItem('cart');
+      const cart: any[] = cartRaw ? JSON.parse(cartRaw) : [];
+      const idx = cart.findIndex(p => (p.id && this.id) ? p.id === this.id : p.title === this.title);
+      const currentQty = idx >= 0 ? (cart[idx].quantity || 1) : 0;
+
+      if (this.stock !== undefined && (currentQty + 1) > this.stock) {
+        alert('No hay suficiente stock para agregar más unidades de este producto');
+        return;
+      }
+
+      if (idx >= 0) {
+        cart[idx].quantity = currentQty + 1;
+      } else {
+        cart.push({
+          id: this.id,
+          title: this.title,
+          description: this.description,
+          price: this.price,
+          image: this.image,
+          badge: this.badge,
+          stock: this.stock,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      try { window.dispatchEvent(new CustomEvent('cart:changed', { detail: { count: cart.reduce((s, it) => s + (it.quantity || 0), 0) } })); } catch(e) {}
+      alert('Producto agregado al carrito');
+    } catch (e) {
+      console.error('Error adding to cart', e);
+      alert('No se pudo agregar el producto al carrito');
+    }
+  }
 }

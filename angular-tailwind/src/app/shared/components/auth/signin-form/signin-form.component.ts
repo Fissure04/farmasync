@@ -6,6 +6,8 @@ import { ButtonComponent } from '../../ui/button/button.component';
 import { InputFieldComponent } from '../../form/input/input-field.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../../services/auth.service';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-signin-form',
@@ -26,22 +28,36 @@ export class SigninFormComponent {
   showPassword = false;
   isChecked = false;
 
-  username = '';
+  email = '';
   password = '';
+
+  constructor(private auth: AuthService) {}
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
   onSignIn() {
-    console.log('Username:', this.username);
-    console.log('Password:', this.password);
-    console.log('Remember Me:', this.isChecked);
-    // Simulate login and redirect to dashboard
-    if (this.username && this.password) {
-      // For demo, any username/password works
-      localStorage.setItem('user', JSON.stringify({ username: this.username, role: 'client' })); // Default to client
-      window.location.href = '/dashboard';
+    if (!this.email || !this.password) {
+      alert('Ingrese email y contraseña');
+      return;
     }
+
+    this.auth.login(this.email, this.password)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          const role = this.auth.currentUser?.role;
+          if (role === 'admin') {
+            window.location.href = '/admin';
+          } else {
+            window.location.href = '/dashboard';
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Credenciales incorrectas');
+        }
+      });
   }
 }

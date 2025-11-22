@@ -17,16 +17,8 @@
 
     <div *ngIf="products.length; else noProducts">
       <div class="section-title">Productos encontrados ({{ products.length }})</div>
-      <div class="productos-grid">
-        <div *ngFor="let product of products" class="producto">
-          <div class="producto-image">
-            <img [src]="product.imagen_url" alt="{{ product.nombre }}" class="w-full h-full object-cover" *ngIf="product.imagen_url" />
-          </div>
-          <h3>{{ product.nombre || 'Sin nombre' }}</h3>
-          <div class="descripcion">{{ product.descripcion || 'Sin descripción' }}</div>
-          <div class="precio">{{ product.precio ? ('$' + product.precio) : 'N/A' }}</div>
-          <button>Ver</button>
-        </div>
+      <div class="productos-grid grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
       </div>
     </div>
 

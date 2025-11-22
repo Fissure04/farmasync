@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../../services/user.service';
+import { UserFormComponent, UserFormDTO } from '../../../shared/components/ui/user-form/user-form.component';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service';
 
 interface User {
   id: number;
@@ -14,157 +18,109 @@ interface User {
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserFormComponent],
   template: `
     <div class="space-y-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Gestión de Usuarios</h1>
-        <button (click)="openAddUserModal()" class="px-6 py-3 rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-700">
-          + Agregar Usuario
-        </button>
-      </div>
-
-      <!-- Estadísticas -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total Usuarios</p>
-              <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ users.length }}</p>
-            </div>
-            <div class="w-12 h-12 bg-blue-light-100 dark:bg-blue-light-900 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-light-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Usuarios Activos</p>
-              <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ getActiveCount() }}</p>
-            </div>
-            <div class="w-12 h-12 bg-success-100 dark:bg-success-900 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Usuarios Inactivos</p>
-              <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ getInactiveCount() }}</p>
-            </div>
-            <div class="w-12 h-12 bg-warning-100 dark:bg-warning-900 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-warning-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Usuarios Suspendidos</p>
-              <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ getSuspendedCount() }}</p>
-            </div>
-            <div class="w-12 h-12 bg-error-100 dark:bg-error-900 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-error-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search and Filter -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex gap-4">
-        <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por nombre o email..." class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white" />
-        <select [(ngModel)]="filterRole" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-900 dark:text-white">
-          <option value="">Todos los roles</option>
-          <option value="Admin">Admin</option>
-          <option value="Cliente">Cliente</option>
-          <option value="Agente">Agente</option>
-        </select>
-      </div>
-
-      <!-- Users Table -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <table class="w-full text-sm text-left text-gray-600 dark:text-gray-300">
-          <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-            <tr>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Nombre</th>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Email</th>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Rol</th>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Estado</th>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Último Acceso</th>
-              <th class="px-6 py-4 font-semibold text-gray-800 dark:text-white">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (user of getFilteredUsers(); track user.id) {
-            <tr class="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
-              <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">{{ user.name }}</td>
-              <td class="px-6 py-4">{{ user.email }}</td>
-              <td class="px-6 py-4">
-                <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-blue-light-100 dark:bg-blue-light-900 text-blue-light-700 dark:text-blue-light-400">
-                  {{ user.role }}
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <span [ngClass]="getStatusClass(user.status)" class="inline-block px-3 py-1 text-xs font-medium rounded-full">
-                  {{ getStatusText(user.status) }}
-                </span>
-              </td>
-              <td class="px-6 py-4">{{ user.lastLogin }}</td>
-              <td class="px-6 py-4 flex gap-2">
-                <button (click)="editUser(user)" class="text-blue-light-600 hover:underline text-sm font-medium">Editar</button>
-                <button (click)="deleteUser(user.id)" class="text-error-600 hover:underline text-sm font-medium">Eliminar</button>
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay usuarios que coincidan con los filtros</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Crear Usuario</h1>
+      <app-user-form
+        [isOpen]="true"
+        [mode]="'create'"
+        [title]="'Agregar usuario'"
+        [initial]="null"
+        (close$)="onUserFormClose()"
+        (save$)="onUserFormSave($event)"
+      ></app-user-form>
     </div>
   `,
 })
-export class UserManagementComponent {
-  users: User[] = [
-    { id: 1, name: 'María González', email: 'maria@example.com', role: 'Cliente', status: 'active', lastLogin: '2024-11-16' },
-    { id: 2, name: 'Carlos Rodríguez', email: 'carlos@example.com', role: 'Cliente', status: 'active', lastLogin: '2024-11-15' },
-    { id: 3, name: 'Ana López', email: 'ana@example.com', role: 'Cliente', status: 'inactive', lastLogin: '2024-11-10' },
-    { id: 4, name: 'Pedro Martínez', email: 'pedro@example.com', role: 'Admin', status: 'active', lastLogin: '2024-11-16' },
-    { id: 5, name: 'Laura Sánchez', email: 'laura@example.com', role: 'Agente', status: 'suspended', lastLogin: '2024-11-05' },
-    { id: 6, name: 'Juan García', email: 'juan@example.com', role: 'Cliente', status: 'active', lastLogin: '2024-11-16' },
-    { id: 7, name: 'Sofia Torres', email: 'sofia@example.com', role: 'Cliente', status: 'inactive', lastLogin: '2024-11-12' },
-  ];
+export class UserManagementComponent implements OnInit {
+  users: User[] = [];
 
   searchTerm = '';
   filterRole = '';
 
+  // mode: create vs edit
+  isCreateMode = true;
+
   openAddUserModal() {
-    alert('Función de agregar usuario (por implementar)');
+    this.isCreateMode = true;
+    this.editingId = undefined;
+    this.editingInitial = null;
+    this.isUserFormOpen = true;
   }
 
   editUser(user: User) {
-    alert(`Editando usuario: ${user.name}`);
+    if (!user.id) {
+      alert('No se puede editar: el usuario no tiene un ID expuesto por la API.');
+      return;
+    }
+    // prepare initial model for the form
+    const parts = (user.name || '').split(' ');
+    const nombre = parts.shift() || '';
+    const apellido = parts.join(' ') || '';
+    this.isCreateMode = false;
+    this.editingId = user.id;
+    this.editingInitial = {
+      nombre,
+      apellido,
+      email: user.email,
+      direccion: '',
+      telefono: '' ,
+      password: '',
+      idRol: this.roleToId(user.role)
+    } as UserFormDTO;
+    this.isUserFormOpen = true;
   }
 
   deleteUser(id: number) {
-    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
-      this.users = this.users.filter(u => u.id !== id);
+    if (!id) {
+      alert('No se puede eliminar: el usuario no tiene ID.');
+      return;
+    }
+
+    if (!confirm('¿Está seguro de que desea eliminar este usuario?')) return;
+
+    this.userService.deleteUser(id).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== id);
+        alert('Usuario eliminado.');
+      },
+      error: err => {
+        console.error(err);
+        alert('Error eliminando usuario: ' + (err?.message || err));
+      }
+    });
+  }
+
+  // user form modal state
+  isUserFormOpen = false;
+  editingInitial: UserFormDTO | null = null;
+  editingId?: number | undefined;
+
+  onUserFormClose() {
+    this.isUserFormOpen = false;
+    this.editingInitial = null;
+    this.editingId = undefined;
+    // Redirigir al panel principal del admin
+    window.location.href = '/admin';
+  }
+
+  onUserFormSave(event: { id?: number; dto: any }) {
+    if (event.id) {
+      // update (no se usa en este modo)
+      return;
+    } else {
+      // create
+      this.userService.createUser(event.dto).subscribe({
+        next: created => {
+          alert('Usuario creado correctamente.');
+          this.onUserFormClose();
+        },
+        error: err => {
+          console.error(err);
+          alert('Error creando usuario: ' + (err?.error || err?.message || err));
+        }
+      });
     }
   }
 
@@ -208,6 +164,156 @@ export class UserManagementComponent {
       
       return matchesSearch && matchesRole;
     });
+  }
+
+  constructor(private userService: UserService, private http: HttpClient, private auth: AuthService) {}
+
+  ngOnInit(): void {
+    // Load locally persisted users first so they are visible even without admin token
+    this.users = this.loadLocalUsers();
+    this.loadUsers();
+  }
+
+  private loadUsers() {
+    const tryLoad = (retry = true) => {
+      this.userService.getUsers().subscribe({
+        next: (list) => {
+          // Map backend DTO to the local User interface
+          const serverUsers: User[] = list.map((u, idx) => ({
+            id: (u as any).id ?? (idx + 1),
+            name: `${u.nombre || ''} ${u.apellido || ''}`.trim(),
+            email: u.email,
+            role: u.nombreRol ? this.capitalize(u.nombreRol) : 'Cliente',
+            status: 'active',
+            lastLogin: ''
+          }));
+
+          // Merge serverUsers into this.users, preferring server data but keeping local-only users
+          const merged = [...this.users];
+          for (const su of serverUsers) {
+            const existingIdx = merged.findIndex(mu => mu.email === su.email);
+            if (existingIdx >= 0) {
+              merged[existingIdx] = su; // overwrite with server authoritative data
+            } else {
+              merged.push(su);
+            }
+          }
+          this.users = merged;
+        },
+        error: err => {
+          console.error('Error cargando usuarios', err);
+          // If 403 (forbidden) try to fetch admin token from assets and retry once
+          if (err && err.status === 403 && retry) {
+            console.info('Recibiendo 403 — intentando cargar token admin desde /assets/admin.token y reintentando');
+            this.http.get('/assets/admin.token', { responseType: 'text' }).subscribe({
+              next: (token) => {
+                if (token) {
+                  this.auth.setAdminToken(token.trim());
+                }
+                // retry once
+                tryLoad(false);
+              },
+              error: e2 => {
+                console.error('No se pudo obtener /assets/admin.token', e2);
+                alert('No autorizado para listar usuarios. Asegúrate de tener un token admin válido.');
+              }
+            });
+            return;
+          }
+
+          alert('No se pudieron cargar los usuarios. Revisa la consola.');
+        }
+      });
+    };
+
+    // If no admin token exists, try to fetch it first (useful when token is rotated)
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) {
+      this.http.get('/assets/admin.token', { responseType: 'text' }).subscribe({
+        next: (t) => {
+          if (t) this.auth.setAdminToken(t.trim());
+          tryLoad();
+        },
+        error: (e) => {
+          console.warn('No se pudo obtener /assets/admin.token al iniciar user-management', e);
+          // still try, maybe the user is logged as admin
+          tryLoad();
+        }
+      });
+    } else {
+      tryLoad();
+    }
+  }
+
+  // --- Local persistence helpers ---
+  private localStorageKey = 'localUsers';
+
+  private loadLocalUsers(): User[] {
+    try {
+      const raw = localStorage.getItem(this.localStorageKey);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as any[];
+      return parsed.map((u, idx) => ({
+        id: u.id ?? -(idx + 1),
+        name: u.name || `${u.nombre || ''} ${u.apellido || ''}`.trim(),
+        email: u.email,
+        role: u.role || 'Cliente',
+        status: 'active',
+        lastLogin: ''
+      }));
+    } catch (e) {
+      console.warn('No se pudieron cargar usuarios locales', e);
+      return [];
+    }
+  }
+
+  private saveLocalUser(created: any) {
+    try {
+      const raw = localStorage.getItem(this.localStorageKey);
+      const arr = raw ? JSON.parse(raw) : [];
+      // represent stored user with basic fields
+      const toStore = {
+        id: created.id,
+        nombre: created.nombre,
+        apellido: created.apellido,
+        email: created.email,
+        nombreRol: created.nombreRol || 'cliente'
+      };
+      // replace if same email
+      const idx = arr.findIndex((x: any) => x.email === toStore.email);
+      if (idx >= 0) arr[idx] = toStore; else arr.unshift(toStore);
+      localStorage.setItem(this.localStorageKey, JSON.stringify(arr));
+    } catch (e) {
+      console.warn('No se pudo guardar usuario localmente', e);
+    }
+  }
+
+  private removeLocalUserByEmail(email: string) {
+    try {
+      const raw = localStorage.getItem(this.localStorageKey);
+      if (!raw) return;
+      const arr = JSON.parse(raw) as any[];
+      const filtered = arr.filter(u => u.email !== email);
+      localStorage.setItem(this.localStorageKey, JSON.stringify(filtered));
+    } catch (e) {
+      console.warn('No se pudo eliminar usuario localmente', e);
+    }
+  }
+
+  private capitalize(s?: string) {
+    if (!s) return '';
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
+  private roleToId(role: string) {
+    const r = (role || '').toLowerCase();
+    if (r === 'admin') return 1;
+    return 2; // cliente default
+  }
+
+  private idToRole(id: number) {
+    if (id === 1) return 'Admin';
+    return 'Cliente';
   }
 }
 

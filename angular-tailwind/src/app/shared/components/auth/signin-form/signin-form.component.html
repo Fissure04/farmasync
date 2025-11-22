@@ -6,19 +6,20 @@
           FarmAsync
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Ingresa tu nombre de usuario y contraseña para iniciar sesión.
+          Ingresa tu correo electrónico y contraseña para iniciar sesión.
         </p>
       </div>
 
       <!-- Form -->
       <form (ngSubmit)="onSignIn()" class="space-y-6">
         <div>
-          <app-label>Nombre de usuario <span class="text-error-500">*</span></app-label>
+          <app-label>Correo electrónico <span class="text-error-500">*</span></app-label>
           <app-input-field
-            type="text"
-            placeholder="usuario"
-            [value]="username"
-            name="username"
+            type="email"
+            placeholder="correo@ejemplo.com"
+            [value]="email"
+            (valueChange)="email = '' + $event"
+            name="email"
             class="form-input"
             required
           />
@@ -31,6 +32,7 @@
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Ingresa tu contraseña"
               [value]="password"
+              (valueChange)="password = '' + $event"
               name="password"
               class="form-input"
               required

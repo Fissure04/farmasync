@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductCardComponent } from '../../../shared/components/ecommerce/product-card/product-card.component';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-client-agent',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ProductCardComponent],
   templateUrl: './client-agent.component.html',
   styleUrls: ['./client-agent.component.css']
 })

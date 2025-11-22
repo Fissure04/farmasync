@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductCardComponent } from '../../../shared/components/ecommerce/product-card/product-card.component';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-agent',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ProductCardComponent],
   templateUrl: './admin-agent.component.html',
   styleUrls: ['./admin-agent.component.css']
 })
@@ -17,6 +18,8 @@ export class AdminAgentComponent implements OnInit {
   loading = false;
   error = '';
   private apiUrl = 'http://localhost:5000/query';
+  // session id for interactive user-creation
+  private currentSessionId: string | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -41,7 +44,12 @@ export class AdminAgentComponent implements OnInit {
     this.ventas = [];
 
     console.log('[AdminAgentComponent] Enviando consulta al agente...');
-    this.http.post<any>(this.apiUrl, { consulta: userInput }).subscribe({
+    // If we have an active session, send the answer structured so backend continues the flow
+    const payload = this.currentSessionId
+      ? { consulta: { user_session_continue: true, sessionId: this.currentSessionId, answer: userInput } }
+      : { consulta: userInput };
+
+    this.http.post<any>(this.apiUrl, payload).subscribe({
       next: (response) => {
         console.log('[AdminAgentComponent] Respuesta recibida:', response);
 
@@ -69,16 +77,34 @@ export class AdminAgentComponent implements OnInit {
             }
             // Si data es un objeto
             else if (typeof data === 'object') {
-              // Buscar ventas en diferentes estructuras
-              if (data.result && Array.isArray(data.result)) {
-                registros = data.result;
-                agentMessage = 'Aquí tienes los registros encontrados:';
-              } else if (data.message) {
-                agentMessage = data.message;
-              } else if (data.respuesta) {
-                agentMessage = data.respuesta;
-              } else {
-                agentMessage = 'Respuesta recibida del servidor';
+              // If backend returned a sessionId/question pair for interactive flows
+              if (data.sessionId && data.question) {
+                this.currentSessionId = data.sessionId;
+                agentMessage = data.question;
+              }
+              // If backend returned an interactive continuation response
+              else if (data.ok && data.question) {
+                // keep sessionId until creation or cancel
+                agentMessage = data.question;
+              }
+              // If backend returned a creation result, clear session
+              else if (data.created && data.usuario) {
+                agentMessage = 'Usuario creado: ' + (data.usuario.email || data.usuario.id || JSON.stringify(data.usuario));
+                this.currentSessionId = null;
+              }
+              // Otherwise try to interpret as search/records
+              else {
+                // Buscar ventas en diferentes estructuras
+                if (data.result && Array.isArray(data.result)) {
+                  registros = data.result;
+                  agentMessage = 'Aquí tienes los registros encontrados:';
+                } else if (data.message) {
+                  agentMessage = data.message;
+                } else if (data.respuesta) {
+                  agentMessage = data.respuesta;
+                } else {
+                  agentMessage = 'Respuesta recibida del servidor';
+                }
               }
             }
           }
@@ -110,7 +136,7 @@ export class AdminAgentComponent implements OnInit {
         this.messages.push({ type: 'agent', text: agentMessage });
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('[AdminAgentComponent] Error:', err);
         this.error = 'Error consultando agente';
         this.messages.push({ type: 'agent', text: 'Disculpa, hubo un error. Intenta de nuevo.' });
@@ -124,6 +150,13 @@ export class AdminAgentComponent implements OnInit {
       return [];
     }
     return Object.keys(this.ventas[0]).slice(0, 6);
+  }
+
+  // Helper to detect if the current `ventas` array contains products
+  isProductList(): boolean {
+    if (!this.ventas || this.ventas.length === 0) return false;
+    const first = this.ventas[0];
+    return !!(first && (first.nombre !== undefined) && (first.precio !== undefined));
   }
 
   humanizeColumnName(col: string): string {
